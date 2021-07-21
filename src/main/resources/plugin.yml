@@ -1,0 +1,7 @@
+name: Season4assistance
+version: ${project.version}
+main: com.jungwuk.season4assistance.season4assistance.Season4assistance
+api-version: 1.17
+authors: [ jungwuk ]
+description: 초코서버 시즌 4 HELPER 플러그인
+website: ccc1.kro.kr
