@@ -2,6 +2,9 @@ name: Season4Assistance
 version: ${project.version}
 main: com.jungwuk.season4assistance.season4assistance.Season4Assistance
 api-version: 1.12
+depend:
+  - Citizens
+  - BeautyQuests
 authors: [ jungwuk ]
 description: 초코서버 시즌 4 HELPER 플러그인
 website: ccc1.kro.kr
