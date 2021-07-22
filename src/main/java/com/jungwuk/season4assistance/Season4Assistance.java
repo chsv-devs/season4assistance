@@ -1,4 +1,4 @@
-package com.jungwuk.season4assistance.season4assistance;
+package com.jungwuk.season4assistance;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.events.DialogSendMessageEvent;
