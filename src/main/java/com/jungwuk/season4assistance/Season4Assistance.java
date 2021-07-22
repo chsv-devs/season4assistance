@@ -1,6 +1,7 @@
 package com.jungwuk.season4assistance;
 
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.events.DialogSendMessageEvent;
 import fr.skytasul.quests.api.events.QuestLaunchEvent;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
@@ -78,28 +79,31 @@ public final class Season4Assistance extends JavaPlugin implements Listener {
                 if (!quest.testRequirements(ev.getClicker(), account, false)) {
                     Iterator<AbstractRequirement> requirements = quest.getOptionValueOrDef(OptionRequirements.class).iterator();
 
-                    final AbstractRequirement ar;
-                    if (!requirements.hasNext()) {
-                        return;
-                    }
-                    ar = requirements.next();
+                    while (requirements.hasNext()) {
+                        final AbstractRequirement ar;
+                        ar = requirements.next();
 
-                    if (ar instanceof QuestRequirement) {
-                        QuestRequirement questRequirement = (QuestRequirement) ar;
-                        Quest requiredQuest = BeautyQuests.getInstance().getQuests().get(questRequirement.questId);
-                        BeautyQuests.getInstance().getNPCs().forEach((npc, newStarter) -> {
-                            for (Quest newQuest : newStarter.getQuests()) {
-                                if (newQuest.getID() == requiredQuest.getID()) {
-                                    ar.sendReason(ev.getClicker());
-                                    ev.getClicker().sendMessage(npc.getName() + "에게 찾아가세요.");
-                                    ev.setCancelled(true);
+                        if (ar instanceof QuestRequirement) {
+                            QuestRequirement questRequirement = (QuestRequirement) ar;
+                            Quest requiredQuest = QuestsAPI.getQuestFromID(questRequirement.questId);
+
+                            BeautyQuests.getInstance().getNPCs().forEach((npc, newStarter) -> {
+                                for (Quest newQuest : newStarter.getQuests()) {
+                                    if (newQuest.getID() == requiredQuest.getID()) {
+                                        ar.sendReason(ev.getClicker());
+                                        ev.getClicker().sendMessage(requiredQuest.getName() + ChatColor.GRAY
+                                                + "를 수행하려면 " + ChatColor.RESET
+                                                + npc.getName() + ChatColor.GRAY + "에게 찾아가세요.");
+                                        ev.setCancelled(true);
+                                        return;
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
                     }
                 }
                 if (quest.hasStarted(account)) {
-                    ev.getClicker().sendMessage("이미 이 NPC의 퀘스트를 진행 중 입니다 : " + quest.getName() + " :: " + quest.getDescription() +"\n" +
+                    ev.getClicker().sendMessage("이미 이 NPC의 퀘스트를 진행 중 입니다 : " + quest.getName()  + "\n" +
                             ChatColor.RED + "/quest 명령어로 진행중인 퀘스트를 확인하십시오.");
                     ev.setCancelled(true);
                     return;
