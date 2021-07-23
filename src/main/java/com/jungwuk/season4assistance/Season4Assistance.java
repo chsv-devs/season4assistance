@@ -86,8 +86,11 @@ public final class Season4Assistance extends JavaPlugin implements Listener {
                         if (ar instanceof QuestRequirement) {
                             QuestRequirement questRequirement = (QuestRequirement) ar;
                             Quest requiredQuest = QuestsAPI.getQuestFromID(questRequirement.questId);
+                            Map<NPC, NPCStarter> npcStarterMap = BeautyQuests.getInstance().getNPCs();
 
-                            BeautyQuests.getInstance().getNPCs().forEach((npc, newStarter) -> {
+                            for (Map.Entry<NPC, NPCStarter> entry : npcStarterMap.entrySet()) {
+                                NPC npc = entry.getKey();
+                                NPCStarter newStarter = entry.getValue();
                                 for (Quest newQuest : newStarter.getQuests()) {
                                     if (newQuest.getID() == requiredQuest.getID()) {
                                         ar.sendReason(ev.getClicker());
@@ -98,7 +101,7 @@ public final class Season4Assistance extends JavaPlugin implements Listener {
                                         return;
                                     }
                                 }
-                            });
+                            }
                         }
                     }
                 }
