@@ -16,13 +16,15 @@ import net.citizensnpcs.api.event.NPCClickEvent;
 import net.citizensnpcs.api.event.NPCLeftClickEvent;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
 import net.citizensnpcs.api.npc.NPC;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.map.MapView;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Iterator;
@@ -47,6 +49,15 @@ public final class Season4Assistance extends JavaPlugin implements Listener {
                     ChatColor.getByChar('7') + msg.text, 5, wait, 5);
         } else {
             player.sendTitle(npc.getName(), msg.text, 5, wait, 5);
+        }
+    }
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent ev) {
+        if (!ev.getPlayer().hasPlayedBefore()) {
+            World world = this.getServer().getWorld("튜토리얼");
+            Location loc = new Location(world, 783, 123, 73);
+            ev.getPlayer().teleport(loc);
         }
     }
 
