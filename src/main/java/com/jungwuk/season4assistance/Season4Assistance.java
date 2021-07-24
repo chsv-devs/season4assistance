@@ -21,14 +21,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.map.MapView;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Iterator;
-import java.util.List;
+import java.util.Map;
 
 public final class Season4Assistance extends JavaPlugin implements Listener {
 
@@ -71,12 +68,12 @@ public final class Season4Assistance extends JavaPlugin implements Listener {
         p.playSound(loc, Sound.BLOCK_CHEST_OPEN, 100, 1);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onRightClickNpc(NPCRightClickEvent ev){
         handleNpcClickEvent(ev);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onLeftClickNpc(NPCLeftClickEvent ev) {
         handleNpcClickEvent(ev);
     }
@@ -85,45 +82,90 @@ public final class Season4Assistance extends JavaPlugin implements Listener {
         NPCStarter starter = BeautyQuests.getInstance().getNPCs().get(ev.getNPC());
 
         if (starter != null) {
-            for (Quest quest : starter.getQuests()) {
-                PlayerAccount account = PlayersManager.getPlayerAccount(ev.getClicker());
-                if (!quest.testRequirements(ev.getClicker(), account, false)) {
-                    Iterator<AbstractRequirement> requirements = quest.getOptionValueOrDef(OptionRequirements.class).iterator();
+            PlayerAccount account = PlayersManager.getPlayerAccount(ev.getClicker());
+            if (hasStartedQuest(starter, account)) {
+                Quest startedQuest = getStartedQuest(starter, account);
+                ev.getClicker().sendMessage("§o이 NPC와 진행중인 퀘스트 : "
+                        + startedQuest.getName() + "\n"
+                        + ChatColor.RED + "/quest 명령어로 진행중인 퀘스트를 확인할 수 있습니다.");
+                ev.getClicker().sendTitle("진행 중 : " + startedQuest.getName(), startedQuest.getDescription(), 10, 70, 10);
+            } else {
+                Quest questToStart = getQuestToStart(starter, ev.getClicker());
+                if (questToStart != null) {
+                    if (!questToStart.testRequirements(ev.getClicker(), account, false)) {
+                        Iterator<AbstractRequirement> requirements = questToStart.getOptionValueOrDef(OptionRequirements.class).iterator();
 
-                    while (requirements.hasNext()) {
-                        final AbstractRequirement ar;
-                        ar = requirements.next();
+                        while (requirements.hasNext()) {
+                            final AbstractRequirement ar;
+                            ar = requirements.next();
 
-                        if (ar instanceof QuestRequirement) {
-                            QuestRequirement questRequirement = (QuestRequirement) ar;
-                            Quest requiredQuest = QuestsAPI.getQuestFromID(questRequirement.questId);
-                            Map<NPC, NPCStarter> npcStarterMap = BeautyQuests.getInstance().getNPCs();
+                            if (ar instanceof QuestRequirement) {
+                                QuestRequirement questRequirement = (QuestRequirement) ar;
+                                Quest requiredQuest = QuestsAPI.getQuestFromID(questRequirement.questId);
 
-                            for (Map.Entry<NPC, NPCStarter> entry : npcStarterMap.entrySet()) {
-                                NPC npc = entry.getKey();
-                                NPCStarter newStarter = entry.getValue();
-                                for (Quest newQuest : newStarter.getQuests()) {
-                                    if (newQuest.getID() == requiredQuest.getID()) {
-                                        ar.sendReason(ev.getClicker());
-                                        ev.getClicker().sendMessage(requiredQuest.getName() + ChatColor.GRAY
-                                                + "를 수행하려면 " + ChatColor.RESET
-                                                + npc.getName() + ChatColor.GRAY + "에게 찾아가세요.");
-                                        ev.setCancelled(true);
-                                        return;
-                                    }
+                                Map.Entry<NPC, NPCStarter> entry = getNpcByQuestId(requiredQuest.getID());
+                                if (entry != null) {
+                                    NPC npc = entry.getKey();
+
+                                    ar.sendReason(ev.getClicker());
+                                    ev.getClicker().sendMessage(requiredQuest.getName() + ChatColor.GRAY
+                                            + "를 수행하려면 " + ChatColor.RESET
+                                            + npc.getName() + ChatColor.GRAY + "에게 찾아가세요.");
+                                    return;
                                 }
+                            } else {
+                                break;
                             }
                         }
                     }
                 }
-                if (quest.hasStarted(account)) {
-                    ev.getClicker().sendMessage("이미 이 NPC의 퀘스트를 진행 중 입니다 : " + quest.getName()  + "\n" +
-                            ChatColor.RED + "/quest 명령어로 진행중인 퀘스트를 확인하십시오.");
-                    ev.setCancelled(true);
-                    return;
+            }
+        }
+    }
+
+    public boolean hasStartedQuest(NPCStarter starter, PlayerAccount account) {
+        for (Quest quest : starter.getQuests()) {
+            if (quest.hasStarted(account)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+    public Quest getStartedQuest(NPCStarter starter, PlayerAccount account) {
+        for (Quest quest : starter.getQuests()) {
+            if (quest.hasStarted(account)) {
+                return quest;
+            }
+        }
+
+        return null;
+    }
+
+    public Quest getQuestToStart(NPCStarter starter, Player player) {
+        PlayerAccount account = PlayersManager.getPlayerAccount(player);
+        for (Quest quest : starter.getQuests()) {
+            if (!quest.hasStarted(account) && !quest.hasFinished(account)) {
+                return quest;
+            }
+        }
+
+        return null;
+    }
+
+    public Map.Entry<NPC, NPCStarter> getNpcByQuestId(int targetQuestId) {
+        Map<NPC, NPCStarter> npcStarterMap = BeautyQuests.getInstance().getNPCs();
+
+        for (Map.Entry<NPC, NPCStarter> entry : npcStarterMap.entrySet()) {
+            NPCStarter starter = entry.getValue();
+            for (Quest quest : starter.getQuests()) {
+                if (quest.getID() == targetQuestId) {
+                    return entry;
                 }
             }
         }
+
+        return null;
     }
 
     @Override
