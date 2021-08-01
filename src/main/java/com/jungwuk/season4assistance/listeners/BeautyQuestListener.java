@@ -3,6 +3,7 @@ package com.jungwuk.season4assistance.listeners;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.events.DialogSendMessageEvent;
+import fr.skytasul.quests.api.events.QuestFinishEvent;
 import fr.skytasul.quests.api.events.QuestLaunchEvent;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.options.OptionRequirements;
@@ -23,11 +24,19 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 public class BeautyQuestListener implements Listener {
+    HashMap<Integer, Integer> questBridge = new HashMap<>();
+
+    public BeautyQuestListener() {
+        questBridge.put(50, 8);
+        questBridge.put(8, 9);
+    }
 
     /**
      * 퀘스트의 메세지를 타이틀로 출력해줍니다.
@@ -158,5 +167,14 @@ public class BeautyQuestListener implements Listener {
         }
 
         return null;
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void questBridge(QuestFinishEvent ev) {
+        Quest quest = ev.getQuest();
+        if (questBridge.containsKey(quest.getID())) {
+            Quest newQuest = QuestsAPI.getQuestFromID(questBridge.get(quest.getID()));
+            newQuest.clickNPC(ev.getPlayer());
+        }
     }
 }
