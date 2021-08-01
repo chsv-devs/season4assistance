@@ -17,25 +17,46 @@ import net.citizensnpcs.api.event.NPCClickEvent;
 import net.citizensnpcs.api.event.NPCLeftClickEvent;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
 import net.citizensnpcs.api.npc.NPC;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.configuration.MemorySection;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
 
 public class BeautyQuestListener implements Listener {
     HashMap<Integer, Integer> questBridge = new HashMap<>();
 
     public BeautyQuestListener() {
-        questBridge.put(50, 8);
-        questBridge.put(8, 9);
+        File configFile = new File("plugins/season4assistance/questBridge.yml");
+        FileConfiguration config = YamlConfiguration.loadConfiguration(configFile);
+        MemorySection memorySection = (MemorySection) config.get("bridge");
+
+        if (memorySection == null) {
+            questBridge.put(-1, -2);
+            config.set("bridge", questBridge);
+            try {
+                config.save(configFile);
+            } catch (IOException e) {
+                Bukkit.getLogger().log(Level.WARNING, "", e);
+            }
+        } else {
+            for (String key : memorySection.getKeys(false)) {
+                questBridge.put(Integer.parseInt(key), memorySection.getInt(key));
+            }
+        }
     }
 
     /**
