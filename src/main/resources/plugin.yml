@@ -8,3 +8,11 @@ depend:
 authors: [ jungwuk ]
 description: 초코서버 시즌 4 HELPER 플러그인
 website: ccc1.kro.kr
+
+commands:
+  qs:
+    aliases:
+      - 퀘스트현황
+      - queststatus
+    description: 내 퀘스트 현황을 봅니다.
+    permission: s4a.cmd.qs
