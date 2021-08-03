@@ -13,6 +13,7 @@ import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.utils.compatibility.SkillAPI;
 import io.lumine.xikage.mythicmobs.api.bukkit.BukkitAPIHelper;
 import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -115,6 +116,8 @@ public class MythicMobsListener implements Listener {
                     if (entry.getKey().getName().equals(m.getEntity().getName())) {
                         Integer amount = entityStage.getPlayerRemainings(acc).get(id);
                         if (amount != null) {
+                            String mobName = ChatColor.stripColor(m.getEntity().getName());
+                            p.sendMessage("  §7" + mobName + " §4" + amount + "§7마리 남음!");
                             return true;
                         } else {
                             p.sendMessage("  §7이미 이 몹의 §4퀘스트 목표§7를 달성하였습니다!");
