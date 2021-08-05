@@ -1,5 +1,6 @@
 package com.jungwuk.season4assistance.listeners;
 
+import com.jungwuk.season4assistance.HUtils;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.events.DialogSendMessageEvent;
@@ -69,6 +70,9 @@ public class BeautyQuestListener implements Listener {
         Player player = ev.getPlayer();
         int wait = msg.getWaitTime();
 
+        if (!HUtils.isJePlayer(player)) {
+            return;
+        }
         if (msg.sender == Message.Sender.PLAYER) {
             player.sendTitle(ChatColor.getByChar('d') + player.getName(),
                     ChatColor.getByChar('7') + msg.text, 5, wait, 5);
