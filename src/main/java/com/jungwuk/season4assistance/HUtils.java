@@ -14,17 +14,17 @@ public class HUtils {
             if (entityName.contains("[")) {
                 String filtered = ChatColor.stripColor(entityName).split("\\[")[1].split("레벨")[0].trim();
                 if (filtered.contains("]")) {
-                    return 777777;
+                    return -1;
                 }
 
                 return Integer.parseInt(filtered);
             } else {
-                return 999999;
+                return -2;
             }
         } catch (Exception e) {
             Bukkit.getLogger().log(Level.WARNING, "몹 레벨을 가져오지 못했습니다.", e);
         }
-        return -1;
+        return -3;
     }
 
     // JE 유저인지 확인합니다.

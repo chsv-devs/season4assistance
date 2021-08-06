@@ -98,7 +98,7 @@ public class MythicMobsListener implements Listener {
     public boolean isAttackable(ActiveMob m, Player p) {
         int mobLvl = HUtils.parseMobLevel(m.getEntity().getName());
         int pLvl = SkillAPI.getLevel(p);
-        if (Math.abs(mobLvl - pLvl) <= 10) {
+        if (mobLvl < 0 || Math.abs(mobLvl - pLvl) <= 10) {
             return true;
         }
 
