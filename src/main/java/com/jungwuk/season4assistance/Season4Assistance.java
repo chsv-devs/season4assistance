@@ -35,19 +35,14 @@ public final class Season4Assistance extends JavaPlugin implements Listener {
         if (command.getName().equals("qs")) {
             Player p = (Player) sender;
             PlayerAccount acc = PlayersManager.getPlayerAccount(p);
-            List<Quest> startedQuests = QuestsAPI.getQuestsStarteds(acc);
+            String msg = HUtils.getQuestStatusMsg(acc);
 
-            if (startedQuests.size() == 0) {
+            if (msg.length() == 0) {
                 p.sendMessage("  §4이런! 진행중인 퀘스트가 없습니다.");
                 return true;
             }
 
-            for (Quest startedQuest : startedQuests) {
-                p.sendMessage("§7========== §c" + startedQuest.getName() + " §7==========");
-                p.sendMessage(startedQuest.getBranchesManager().getDescriptionLine(acc, QuestBranch.Source.SCOREBOARD)
-                        .replace("{nl}", "\n")
-                        + "\n");
-            }
+            p.sendMessage(msg);
         }
         return true;
     }

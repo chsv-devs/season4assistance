@@ -110,10 +110,11 @@ public class BeautyQuestListener implements Listener {
         if (starter != null) {
             PlayerAccount account = PlayersManager.getPlayerAccount(ev.getClicker());
             if (hasStartedQuest(starter, account)) {
+                String msg = HUtils.getQuestStatusMsg(account);
                 Quest startedQuest = getStartedQuest(starter, account);
                 ev.getClicker().sendMessage("§o이 NPC와 진행중인 퀘스트 : "
                         + startedQuest.getName() + "\n"
-                        + ChatColor.RED + "/quest 명령어로 진행중인 퀘스트를 확인할 수 있습니다.");
+                        + ChatColor.RED + "현재 진행중인 퀘스트 정보\n" + msg);
                 ev.getClicker().sendTitle("진행 중 : " + startedQuest.getName(), startedQuest.getDescription(), 10, 70, 10);
             } else {
                 Quest questToStart = getQuestToStart(starter, ev.getClicker());
