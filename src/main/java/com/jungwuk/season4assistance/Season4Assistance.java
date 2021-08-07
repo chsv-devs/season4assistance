@@ -3,6 +3,7 @@ package com.jungwuk.season4assistance;
 import com.jungwuk.season4assistance.listeners.BeautyQuestListener;
 import com.jungwuk.season4assistance.listeners.GeneralListener;
 import com.jungwuk.season4assistance.listeners.MythicMobsListener;
+import com.jungwuk.season4assistance.listeners.SkillApiListener;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.players.PlayerAccount;
 import fr.skytasul.quests.players.PlayersManager;
@@ -19,6 +20,7 @@ public final class Season4Assistance extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
+        this.getServer().getPluginManager().registerEvents(new SkillApiListener(), this);
         this.getServer().getPluginManager().registerEvents(new MythicMobsListener(), this);
         this.getServer().getPluginManager().registerEvents(new GeneralListener(), this);
         this.getServer().getPluginManager().registerEvents(new BeautyQuestListener(),this);
