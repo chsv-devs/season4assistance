@@ -1,6 +1,7 @@
 package com.jungwuk.season4assistance.listeners;
 
 import com.jungwuk.season4assistance.HUtils;
+import com.jungwuk.season4assistance.mechanics.SkillApiMechanic;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.mobs.Mob;
 import fr.skytasul.quests.api.stages.AbstractStage;
@@ -12,6 +13,7 @@ import fr.skytasul.quests.structure.Quest;
 import fr.skytasul.quests.structure.QuestBranch;
 import fr.skytasul.quests.utils.compatibility.SkillAPI;
 import io.lumine.xikage.mythicmobs.api.bukkit.BukkitAPIHelper;
+import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMechanicLoadEvent;
 import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
@@ -30,6 +32,13 @@ public class MythicMobsListener implements Listener {
     public final BukkitAPIHelper bukkitHelper = new BukkitAPIHelper();
     // Key : MythicMob UUID, value : PlayerName-LastAttackedTimestamp
     public final HashMap<UUID, String> mythicMobAndPlayer = new HashMap<>();
+
+    @EventHandler
+    public void onMythicMechanicLoad(MythicMechanicLoadEvent ev) {
+        if (ev.getMechanicName().equalsIgnoreCase("SkillApiSkill")) {
+            ev.register(new SkillApiMechanic(ev.getConfig()));
+        }
+    }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onAttackMythicMob(EntityDamageByEntityEvent ev) {
